@@ -179,8 +179,9 @@ void makeAMovement(Zone* sourceZone, int sourceCellNum, Zone* destinationZone, i
 		sendErrorMessage("makeAMovement","A Zone is NULL");
 		exit(EXIT_FAILURE);
 	}
-	if((sourceCellNum < 1) || (sourceCellNum > 8) || (destinationCellNum < 1) || (destinationCellNum > 8)){
-		sendErrorMessage("makeAMovement", "One of cells does not existe please [1,8]");
+	if((sourceCellNum < 0) || (sourceCellNum > 7) || (destinationCellNum < 0) || (destinationCellNum > 7)){
+		sendInfoMessage("makeAMovement", "One of cells does not existe please [1,8]");
+		printf("\n{SC:%d/DC:%d}\n", sourceCellNum,destinationCellNum);
 		return;
 	}
 	//Cell for Stack
@@ -189,23 +190,23 @@ void makeAMovement(Zone* sourceZone, int sourceCellNum, Zone* destinationZone, i
 	
 	if(((sourceZoneNum < 1) || (sourceZoneNum > 3)) || (destinationZoneNum < 1) || (destinationZoneNum > 3)){
 		//sourceZoneNum & destinationZoneNum must be between 1 and 3
-		sendErrorMessage("makeAMovement", "Source Zone does not existe please [1,2,3]");
+		sendInfoMessage("makeAMovement", "Source Zone does not existe please [1,2,3]");
 		return;
 	}
-	if((sourceZoneNum == 1 && ((sourceCellNum < 1) || (sourceCellNum > 8))) || (destinationZoneNum == 1 && ((destinationCellNum < 1) || (destinationCellNum > 8)))){
+	if((sourceZoneNum == 1 && ((sourceCellNum < 0) || (sourceCellNum > 7))) || (destinationZoneNum == 1 && ((destinationCellNum < 0) || (destinationCellNum > 7)))){
 		//if it is zone1 so the cell must be between 1 and 8
-		printf("\n*********s %d, d %d, sn %d, dn %d",sourceZoneNum, destinationZoneNum, sourceCellNum, destinationCellNum);
-		sendErrorMessage("makeAMovement", "Zone 1 has exactly 8 cells");
+		//printf("\n*********s %d, d %d, sn %d, dn %d",sourceZoneNum, destinationZoneNum, sourceCellNum, destinationCellNum);
+		sendInfoMessage("makeAMovement", "Zone 1 has exactly 8 cells");
 		return;
 	}
 	
-	if(((sourceZoneNum == 2 || sourceZoneNum == 3) && ((sourceCellNum < 1) || (sourceCellNum > 4))) || ((destinationZoneNum == 2 || destinationZoneNum == 3) && ((destinationCellNum < 1) || (destinationCellNum > 4)))){
+	if(((sourceZoneNum == 2 || sourceZoneNum == 3) && ((sourceCellNum < 0) || (sourceCellNum > 3))) || ((destinationZoneNum == 2 || destinationZoneNum == 3) && ((destinationCellNum < 0) || (destinationCellNum > 3)))){
 		//if it is zone2 or 3 so the cell must be between 1 and 4
-		sendErrorMessage("makeAMovement", "Zone 2 and 3 have exactly 4 cells");
+		sendInfoMessage("makeAMovement", "Zone 2 and 3 have exactly 4 cells");
 		return;
 	}
 	if(isZoneEmpty(sourceZone)){
-		sendErrorMessage("makeAMovement", "Source zone is empty");
+		sendInfoMessage("makeAMovement", "Source zone is empty");
 		return;
 	}
 	Stack *sourceCell = sourceZone->stacksArray[sourceCellNum];
@@ -214,7 +215,7 @@ void makeAMovement(Zone* sourceZone, int sourceCellNum, Zone* destinationZone, i
 		exit(EXIT_FAILURE);
 	}
 	if(isStackEmpty(sourceCell)){
-		sendErrorMessage("makeAMovement", "Source cell is empty");
+		sendInfoMessage("makeAMovement", "Source cell is empty");
 		return;
 	}
 	
@@ -232,7 +233,7 @@ void makeAMovement(Zone* sourceZone, int sourceCellNum, Zone* destinationZone, i
 	
 	if(destinationZoneNum == 1){
 		if(!isMovementToZone1Possible(destinationZone, destinationCellNum, cardToMove)){
-			sendErrorMessage("makeAMovement", "Unreachable movement to zone1");
+			sendInfoMessage("makeAMovement", "Unreachable movement to zone 1");
 			return;
 		}
 		Stack *destCell = destinationZone->stacksArray[destinationCellNum];
@@ -251,7 +252,7 @@ void makeAMovement(Zone* sourceZone, int sourceCellNum, Zone* destinationZone, i
 	}
 	else if(destinationZoneNum == 2){
 		if(!isMovementToZone2Possible(destinationZone, destinationCellNum, cardToMove)){
-			sendErrorMessage("makeAMovement", "Unreachable movement to zone1");
+			sendInfoMessage("makeAMovement", "Unreachable movement to zone 2");
 			return;
 		}
 		Stack *destCell = destinationZone->stacksArray[destinationCellNum];
@@ -269,7 +270,7 @@ void makeAMovement(Zone* sourceZone, int sourceCellNum, Zone* destinationZone, i
 	}
 	else if(destinationZoneNum == 3){
 		if(!isMovementToZone3Possible(destinationZone, destinationCellNum, cardToMove)){
-			sendErrorMessage("makeAMovement", "Unreachable movement to zone1");
+			sendInfoMessage("makeAMovement", "Unreachable movement to zone 3");
 			return;
 		}
 		Stack *destCell = destinationZone->stacksArray[destinationCellNum];
@@ -286,7 +287,7 @@ void makeAMovement(Zone* sourceZone, int sourceCellNum, Zone* destinationZone, i
 		pop(sourceCell);
 	}
 	else{
-		sendErrorMessage("makeAMosourceCellvement","Uknown Movement");
+		sendInfoMessage("makeAMosourceCellvement","Uknown Movement");
 		return;
 	}
 	
@@ -360,17 +361,32 @@ int isMovementToZone3Possible(Zone *zone3, int cell, Card *cardToMove){
 		sendErrorMessage("isMovementToZone3Possible","cardToMove is NULL");
 		exit(EXIT_FAILURE);
 	}
-	if(cell < 1 || cell > 4 ){
-		//sendErrorMessage("isMovementToZone3Possible","cell must be between 1 and 4");
+	if(cell < 0 || cell > 3 ){
+		sendInfoMessage("isMovementToZone3Possible","cell must be between 1 and 4");
 		return 0;
 	}
-	if(isZoneEmpty(zone3) && cardToMove->num != AS) return 0;
-	if(isZoneFull(zone3)) return 0;
+	if(isZoneEmpty(zone3) && cardToMove->num != AS){
+		sendInfoMessage("isMovementToZone3Possible","First crad must be AS");
+		return 0;
+	}
+	if(isZoneFull(zone3)){
+		sendInfoMessage("isMovementToZone3Possible","Zone 3 is full");
+		return 0;
+	}
 	Stack *stmp = zone3->stacksArray[cell];
-	if(isStackEmpty(stmp) && cardToMove->num != AS) return 0;
-	if(isStackFull(stmp)) return 0;
+	if(isStackEmpty(stmp) && cardToMove->num != AS){
+		sendInfoMessage("isMovementToZone3Possible","First crad must be AS");
+		return 0;
+	}
+	if(isStackFull(stmp)){
+		sendInfoMessage("isMovementToZone3Possible","destination Cell is full");
+		 return 0;
+	}
 	if(isStackEmpty(stmp) && cardToMove->num == AS) return 1;
-	if((cardToMove->num-stmp->head->card->num != 1) || cardToMove->type!=stmp->head->card->type) return 0;
+	if((cardToMove->num-stmp->head->card->num != 1) || cardToMove->type!=stmp->head->card->type){
+		sendInfoMessage("isMovementToZone3Possible","Cards of the same cell must be same type");
+		return 0;
+	}
 	return 1;
 	
 }
@@ -385,15 +401,18 @@ int isMovementToZone2Possible(Zone *zone2, int cell, Card *cardToMove){
 		sendErrorMessage("isMovementToZone2Possible","cardToMove is NULL");
 		exit(EXIT_FAILURE);
 	}
-	if(cell < 1 || cell > 4 ){
-		//sendErrorMessage("isMovementToZone3Possible","cell must be between 1 and 4");
+	if(cell < 0 || cell > 3 ){
+		sendInfoMessage("isMovementToZone2Possible","cell must be between 1 and 4");
 		return 0;
 	}
 	if(isZoneEmpty(zone2)) return 1;
 	//if(isZoneFull(zone1)) return 0;
 	Stack *stmp = zone2->stacksArray[cell];
 	if(isStackEmpty(stmp)) return 1;
-	if(isStackFull(stmp)) return 0;
+	if(isStackFull(stmp)){
+		sendInfoMessage("isMovementToZone2Possible","destination cell is full");
+		return 0;
+	}
 	return 1;
 	
 }
@@ -407,8 +426,8 @@ int isMovementToZone1Possible(Zone *zone1, int cell, Card *cardToMove){
 		sendErrorMessage("isMovementToZone1Possible","cardToMove is NULL");
 		exit(EXIT_FAILURE);
 	}
-	if(cell < 1 || cell > 8 ){
-		sendErrorMessage("isMovementToZone3Possible","cell must be between 1 and 4");
+	if(cell < 0 || cell > 7 ){
+		sendInfoMessage("isMovementToZone1Possible","cell must be between 1 and 4");
 		return 0;
 	}
 	if(isZoneEmpty(zone1)) return 1;
@@ -421,11 +440,11 @@ int isMovementToZone1Possible(Zone *zone1, int cell, Card *cardToMove){
 	}
 	if(isStackEmpty(stmp)) return 1;
 	if(isStackFull(stmp)){
-		sendErrorMessage("isMovementToZone1Possible","destination cell is full");
+		sendInfoMessage("isMovementToZone1Possible","destination cell is full");
 		return 0;
 	};
 	if((stmp->head->card->num-cardToMove->num != 1) || cardToMove->color==stmp->head->card->color){
-		sendErrorMessage("isMovementToZone1Possible","Card to move must lower with different color");
+		sendInfoMessage("isMovementToZone1Possible","Card to move must lower with different color");
 		return 0;
 	}
 	return 1;

@@ -80,8 +80,9 @@ int main(int argc, char *argv[]) {
 				printf("\n peekedSourceZone(%d) or peekedDestinationZone(%d) is NULL\n",sourceZoneIn, destZoneIn);
 			}
 			
-			makeAMovement(peekedSourceZone, sourceCellIn, peekedDestinationZone, destCellIn);
-			printf("\n*** Movement Done ***\n");
+			makeAMovement(peekedSourceZone, sourceCellIn-1, peekedDestinationZone, destCellIn-1);
+			//printf("\n*** after movement ***\n");
+			
 			if(isWinner(zone1, zone2, zone3)){
 				printf("\n\t***********************************\n");
 				printf("\n\t|| Congratulations !! you won :) ||\n");
